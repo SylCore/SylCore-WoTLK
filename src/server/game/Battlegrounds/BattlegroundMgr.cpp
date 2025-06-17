@@ -48,6 +48,7 @@
 #include "World.h"
 #include "WorldPacket.h"
 #include <unordered_map>
+#include <EncryptionProtection.h>
 
 bool BattlegroundTemplate::IsArena() const
 {
@@ -477,7 +478,7 @@ void BattlegroundMgr::LoadBattlegroundTemplates()
     {
         Field* fields = result->Fetch();
 
-        BattlegroundTypeId bgTypeId = static_cast<BattlegroundTypeId>(fields[0].Get<uint32>());
+        BattlegroundTypeId bgTypeId                         = static_cast<BattlegroundTypeId>(fields[0].Get<uint32>());
 
         if (sDisableMgr->IsDisabledFor(DISABLE_TYPE_BATTLEGROUND, bgTypeId, nullptr))
             continue;
@@ -491,15 +492,15 @@ void BattlegroundMgr::LoadBattlegroundTemplates()
         }
 
         BattlegroundTemplate bgTemplate;
-        bgTemplate.Id = bgTypeId;
-        bgTemplate.MinPlayersPerTeam = fields[1].Get<uint16>();
-        bgTemplate.MaxPlayersPerTeam = fields[2].Get<uint16>();
-        bgTemplate.MinLevel = fields[3].Get<uint8>();
-        bgTemplate.MaxLevel = fields[4].Get<uint8>();
-        float dist = fields[9].Get<float>();
-        bgTemplate.MaxStartDistSq = dist * dist;
-        bgTemplate.Weight = fields[10].Get<uint8>();
-        bgTemplate.ScriptId = sObjectMgr->GetScriptId(fields[11].Get<std::string>());
+        bgTemplate.Id                                       = bgTypeId;
+        bgTemplate.MinPlayersPerTeam                        = fields[1].Get<uint16>();
+        bgTemplate.MaxPlayersPerTeam                        = fields[2].Get<uint16>();
+        bgTemplate.MinLevel                                 = fields[3].Get<uint8>();
+        bgTemplate.MaxLevel                                 = fields[4].Get<uint8>();
+        float dist                                          = fields[9].Get<float>();
+        bgTemplate.MaxStartDistSq                           = dist * dist;
+        bgTemplate.Weight                                   = fields[10].Get<uint8>();
+        bgTemplate.ScriptId                                 = sObjectMgr->GetScriptId(DecryptName(fields[11].Get<std::string>()));
         bgTemplate.BattlemasterEntry = bl;
 
         if (bgTemplate.MaxPlayersPerTeam == 0 || bgTemplate.MinPlayersPerTeam > bgTemplate.MaxPlayersPerTeam)

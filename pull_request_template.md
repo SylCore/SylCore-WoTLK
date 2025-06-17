@@ -43,15 +43,10 @@ This PR has been:
 - [ ]
 - [ ]
 
-<!-- If you intend to contribute repeatedly to our project, it is a good idea to join our discord channel. We set ranks for our contributors and give them access to special resources or knowledge: https://discord.com/invite/GyFvXpk7)
-     Do not remove the instructions below about testing, they will help users to test your PR -->
-## How to Test AzerothCore PRs
+
+## How to Test SylCore PRs
  
 When a PR is ready to be tested, it will be marked as **[WAITING TO BE TESTED]**.
-
-You can help by testing PRs and writing your feedback here on the PR's page on GitHub. Follow the instructions here:
-
-http://www.azerothcore.org/wiki/How-to-test-a-PR
 
 **REMEMBER**: when testing a PR that changes something **generic** (i.e. a part of code that handles more than one specific thing), the tester should not only check that the PR does its job (e.g. fixing spell XXX) but **especially** check that the PR does not cause any regression (i.e. introducing new bugs).
 

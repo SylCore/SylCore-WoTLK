@@ -10,15 +10,12 @@ We support the following versions of dependencies.
 | :red_circle:         | **NOT** Supported |
 | :large_blue_diamond: |  **Recommended**  |
 
-### Versions of AzerothCore:
+### Versions of SylCore:
 
-| AzerothCore Branch           |       Status       |     Recommended      |
+| SylCore Branch           |       Status       |     Recommended      |
 | ---------------------------- | :----------------: | :------------------: |
 | **master**                   | :white_check_mark: | :large_blue_diamond: |
 | Any non-official fork        |    :red_circle:    |                      |
-| Any Playerbots fork          |    :red_circle:    |                      |
-| Any NPCBots fork             |    :red_circle:    |                      |
-| Any AC (non-official) repack |    :red_circle:    |                      |
 
 ### Supported Operating Systems
 
@@ -84,14 +81,7 @@ We support the following versions of dependencies.
 | 12   | :white_check_mark: |                      |
 | 11 ≤ |    :red_circle:    |                      |
 
-> [!NOTE]
-> We do **NOT** support any repacks that may or may not have been made based on AzerothCore. This is because they are usually based on older versions and there is no way to know what is in the precompiled binaries. Instead, you should compile your binaries from the AzerothCore source. To get started, read the [Installation Guide](https://www.azerothcore.org/wiki/installation).
-
-> [!CAUTION] 
-> [Why you should not use repacks to run your WoW server](https://www.mangosrumors.org/why-you-should-not-use-repacks-to-run-your-wow-server/)
-
 ## Reporting a Vulnerability
 
 We class a vulnerability to be any hack or exploit that has an impact on the server performance or that gives unfair advantages in the game (e.g. fly hacking or injection tools).
-
-If a new vulnerability is found you should always create a new [bug report](https://github.com/azerothcore/azerothcore-wotlk/issues/new?assignees=&labels=&projects=&template=bug_report.yml).
+If a new Vulnerability is found, please report it to the staff team on Discord, or make a bug report here on Github.

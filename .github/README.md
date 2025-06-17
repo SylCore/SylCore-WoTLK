@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="https://raw.githubusercontent.com/Sylian1337/SylCore-WoTLK/refs/heads/master/sylcore.png" alt="logo" height="300" width="700" >
+	<img src="https://raw.githubusercontent.com/Sylian1337/SylCore-WoTLK/refs/heads/master/Front-SylCore-Without-Background.png" alt="logo" height="400" width="500" >
 </h1>
 
 [![Discord](https://img.shields.io/discord/1335678181767778325?logo=Discord&logoColor=white&label=Join%20The%20Discord)](https://discord.gg/BQBD5MqspY)

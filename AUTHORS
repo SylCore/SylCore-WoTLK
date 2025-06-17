@@ -1,12 +1,12 @@
-# List of AUTHORS who contributed over time to the AzerothCore project
+# List of AUTHORS who contributed over time to the SylCore project
 
 ## Warning
-The code of AzerothCore is shipped as it is without any form of warranty,
+The code of SylCore is shipped as it is without any form of warranty,
 and - except for third party libraries licensed under the AGPL 3,
 which you can read from the file "LICENSE".
 
 ## Point of current development
-The project is currently hosted at https://www.azerothcore.org/ and developed under https://github.com/azerothcore
+The project is currently hosted at https://sylcore.org and developed under https://github.com/SylCore/SylCore-WoTLK
 
 ## History of development
 Development of this project dates back to 2004, and was developed under various umbrellas over time:
@@ -16,13 +16,15 @@ Development of this project dates back to 2004, and was developed under various 
 * SD2 project, 2008-2009, located at http://www.scriptdev2.com/
 * TrinityCore, 2008-2012, located at https://www.trinitycore.org/
 * SunwellCore 2012-2016, privately developed, more info at https://www.azerothcore.org/pages/sunwell.pl/
-* AzerothCore, 2016-CURRENT, located at https://www.azerothcore.org/
+* AzerothCore, 2016-2025, located at https://www.azerothcore.org/
+* SylCore, 2025-CURRENT, located at https://sylcore.org
 
 ## Authorship of the code
 Authorship is assigned for each commit within the git history, which is stored in these git repositories:
 * github.com/cmangos/mangos-svn (History from MaNGOS project from 2005-2008, originally hosted at http://mangos.svn.sourceforge.net)
 * github.com/TrinityCore/TrinityCore
 * github.com/azerothcore/azerothcore-wotlk
+* github.com/SylCore/SylCore-WoTLK
 
 Unfortunately, we have no detailed information on the history of the WoWD project;
 if somebody can provide information, please contact us, so that we can make this history available

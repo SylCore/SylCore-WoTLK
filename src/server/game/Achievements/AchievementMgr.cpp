@@ -45,6 +45,7 @@
 #include "World.h"
 #include "WorldPacket.h"
 #include "WorldSessionMgr.h"
+#include <EncryptionProtection.h>
 
 bool AchievementCriteriaData::IsValid(AchievementCriteriaEntry const* criteria)
 {
@@ -3002,8 +3003,8 @@ void AchievementGlobalMgr::LoadRewards()
         reward.titleId[1]   = fields[2].Get<uint32>(); // Horde title
         reward.itemId       = fields[3].Get<uint32>();
         reward.sender       = fields[4].Get<uint32>(); // The sender of the mail (a creature from creature_template)
-        reward.subject      = fields[5].Get<std::string>();
-        reward.text         = fields[6].Get<std::string>(); // Body in DB
+        reward.subject      = DecryptName(fields[5].Get<std::string>());
+        reward.text         = DecryptName(fields[6].Get<std::string>()); // Body in DB
         reward.mailTemplate = fields[7].Get<uint32>();
 
         // Must reward a title or send a mail else, skip it.
@@ -3121,8 +3122,8 @@ void AchievementGlobalMgr::LoadRewardLocales()
             continue;
 
         AchievementRewardLocale& data = _achievementRewardLocales[ID];
-        ObjectMgr::AddLocaleString(fields[2].Get<std::string>(), locale, data.Subject);
-        ObjectMgr::AddLocaleString(fields[3].Get<std::string>(), locale, data.Text);
+        ObjectMgr::AddLocaleString(DecryptName(fields[2].Get<std::string>()), locale, data.Subject);
+        ObjectMgr::AddLocaleString(DecryptName(fields[3].Get<std::string>()), locale, data.Text);
     } while (result->NextRow());
 
     LOG_INFO("server.loading", ">> Loaded {} Achievement Reward Locale Strings in {} ms", (unsigned long)_achievementRewardLocales.size(), GetMSTimeDiffToNow(oldMSTime));

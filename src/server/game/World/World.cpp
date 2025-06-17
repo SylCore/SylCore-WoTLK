@@ -2015,7 +2015,7 @@ void World::SetInitialWorldSettings()
     if (sConfigMgr->isDryRun())
     {
         sMapMgr->UnloadAll();
-        LOG_INFO("server.loading", "AzerothCore Dry Run Completed, Terminating.");
+        LOG_INFO("server.loading", "SylCore Dry Run Completed, Terminating.");
         exit(0);
     }
 }

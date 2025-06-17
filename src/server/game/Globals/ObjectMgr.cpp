@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 #include "ObjectMgr.h"
 #include "AchievementMgr.h"
 #include "ArenaTeamMgr.h"
@@ -58,6 +57,7 @@
 #include <numeric>
 
 #include "ItemEnchantmentMgr.h"
+#include "EncryptionProtection.h"
 
 ScriptMapMap sSpellScripts;
 ScriptMapMap sEventScripts;
@@ -415,8 +415,8 @@ void ObjectMgr::LoadCreatureLocales()
             continue;
 
         CreatureLocale& data = _creatureLocaleStore[ID];
-        AddLocaleString(fields[2].Get<std::string>(), locale, data.Name);
-        AddLocaleString(fields[3].Get<std::string>(), locale, data.Title);
+        AddLocaleString(DecryptName(fields[2].Get<std::string>()), locale, data.Name);
+        AddLocaleString(DecryptName(fields[3].Get<std::string>()), locale, data.Title);
     } while (result->NextRow());
 
     LOG_INFO("server.loading", ">> Loaded {} Creature Locale Strings in {} ms", (unsigned long)_creatureLocaleStore.size(), GetMSTimeDiffToNow(oldMSTime));
@@ -446,8 +446,8 @@ void ObjectMgr::LoadGossipMenuItemsLocales()
             continue;
 
         GossipMenuItemsLocale& data = _gossipMenuItemsLocaleStore[MAKE_PAIR32(MenuID, OptionID)];
-        AddLocaleString(fields[3].Get<std::string>(), locale, data.OptionText);
-        AddLocaleString(fields[4].Get<std::string>(), locale, data.BoxText);
+        AddLocaleString(DecryptName(fields[3].Get<std::string>()), locale, data.OptionText);
+        AddLocaleString(DecryptName(fields[4].Get<std::string>()), locale, data.BoxText);
     } while (result->NextRow());
 
     LOG_INFO("server.loading", ">> Loaded {} Gossip Menu Option Locale Strings in {} ms", (uint32)_gossipMenuItemsLocaleStore.size(), GetMSTimeDiffToNow(oldMSTime));
@@ -516,7 +516,7 @@ void ObjectMgr::LoadPointOfInterestLocales()
             continue;
 
         PointOfInterestLocale& data = _pointOfInterestLocaleStore[ID];
-        AddLocaleString(fields[2].Get<std::string>(), locale, data.Name);
+        AddLocaleString(DecryptName(fields[2].Get<std::string>()), locale, data.Name);
     } while (result->NextRow());
 
     LOG_INFO("server.loading", ">> Loaded {} Points Of Interest Locale Strings in {} ms", (uint32)_pointOfInterestLocaleStore.size(), GetMSTimeDiffToNow(oldMSTime));
@@ -611,8 +611,11 @@ void ObjectMgr::LoadCreatureTemplate(Field* fields, bool triggerHook)
     {
         creatureTemplate.KillCredit[i] = fields[4 + i].Get<uint32>();
     }
-    creatureTemplate.Name             = fields[6].Get<std::string>();
-    creatureTemplate.SubName          = fields[7].Get<std::string>();
+
+    // Set creature template data.
+
+    creatureTemplate.Name             = DecryptName(fields[6].Get<std::string>());
+    creatureTemplate.SubName          = DecryptName(fields[7].Get<std::string>());
     creatureTemplate.IconName         = fields[8].Get<std::string>();
     creatureTemplate.GossipMenuId     = fields[9].Get<uint32>();
     creatureTemplate.minlevel         = fields[10].Get<uint8>();
@@ -662,7 +665,7 @@ void ObjectMgr::LoadCreatureTemplate(Field* fields, bool triggerHook)
     creatureTemplate.VehicleId      = fields[43].Get<uint32>();
     creatureTemplate.mingold        = fields[44].Get<uint32>();
     creatureTemplate.maxgold        = fields[45].Get<uint32>();
-    creatureTemplate.AIName         = fields[46].Get<std::string>(); // stopped here, fix it
+    creatureTemplate.AIName         = DecryptName(fields[46].Get<std::string>()); // stopped here, fix it
     creatureTemplate.MovementType   = uint32(fields[47].Get<uint8>());
     if (!fields[48].IsNull())
     {
@@ -700,7 +703,7 @@ void ObjectMgr::LoadCreatureTemplate(Field* fields, bool triggerHook)
     creatureTemplate.MechanicImmuneMask    = fields[63].Get<uint32>();
     creatureTemplate.SpellSchoolImmuneMask = fields[64].Get<uint8>();
     creatureTemplate.flags_extra           = fields[65].Get<uint32>();
-    creatureTemplate.ScriptID              = GetScriptId(fields[66].Get<std::string>());
+    creatureTemplate.ScriptID              = GetScriptId(DecryptName(fields[66].Get<std::string>()));
 
     // useful if the creature template load is being triggered from outside this class
     if (triggerHook)
@@ -2192,7 +2195,7 @@ void ObjectMgr::LoadCreatures()
         data.npcflag            = fields[20].Get<uint32>();
         data.unit_flags         = fields[21].Get<uint32>();
         data.dynamicflags       = fields[22].Get<uint32>();
-        data.ScriptId           = GetScriptId(fields[23].Get<std::string>());
+        data.ScriptId           = GetScriptId(DecryptName(fields[23].Get<std::string>()));
 
         if (!data.ScriptId)
             data.ScriptId = cInfo->ScriptID;
@@ -2546,7 +2549,7 @@ void ObjectMgr::LoadGameobjects()
         data.rotation.z     = fields[9].Get<float>();
         data.rotation.w     = fields[10].Get<float>();
         data.spawntimesecs  = fields[11].Get<int32>();
-        data.ScriptId       = GetScriptId(fields[18].Get<std::string>());
+        data.ScriptId       = GetScriptId(DecryptName(fields[18].Get<std::string>()));
         if (!data.ScriptId)
             data.ScriptId = gInfo->ScriptId;
 
@@ -2689,8 +2692,8 @@ void ObjectMgr::LoadItemLocales()
             continue;
 
         ItemLocale& data = _itemLocaleStore[ID];
-        AddLocaleString(fields[2].Get<std::string>(), locale, data.Name);
-        AddLocaleString(fields[3].Get<std::string>(), locale, data.Description);
+        AddLocaleString(DecryptName(fields[2].Get<std::string>()), locale, data.Name);
+        AddLocaleString(DecryptName(fields[3].Get<std::string>()), locale, data.Description);
     } while (result->NextRow());
 
     LOG_INFO("server.loading", ">> Loaded {} Item Locale Strings in {} ms", (uint32)_itemLocaleStore.size(), GetMSTimeDiffToNow(oldMSTime));
@@ -2757,7 +2760,7 @@ void ObjectMgr::LoadItemTemplates()
         itemTemplate.Class                     = uint32(fields[1].Get<uint8>());
         itemTemplate.SubClass                  = uint32(fields[2].Get<uint8>());
         itemTemplate.SoundOverrideSubclass     = int32(fields[3].Get<int8>());
-        itemTemplate.Name1                     = fields[4].Get<std::string>();
+        itemTemplate.Name1                     = DecryptName(fields[4].Get<std::string>());
         itemTemplate.DisplayInfoID             = fields[5].Get<uint32>();
         itemTemplate.Quality                   = uint32(fields[6].Get<uint8>());
         itemTemplate.Flags                     = ItemFlags(fields[7].Get<uint32>());
@@ -2821,7 +2824,7 @@ void ObjectMgr::LoadItemTemplates()
         }
 
         itemTemplate.Bonding        = uint32(fields[101].Get<uint8>());
-        itemTemplate.Description    = fields[102].Get<std::string>();
+        itemTemplate.Description    = DecryptName(fields[102].Get<std::string>());
         itemTemplate.PageText       = fields[103].Get<uint32>();
         itemTemplate.LanguageID     = uint32(fields[104].Get<uint8>());
         itemTemplate.PageMaterial   = uint32(fields[105].Get<uint8>());
@@ -2852,7 +2855,7 @@ void ObjectMgr::LoadItemTemplates()
         itemTemplate.Duration                = fields[129].Get<uint32>();
         itemTemplate.ItemLimitCategory       = uint32(fields[130].Get<int16>());
         itemTemplate.HolidayId               = fields[131].Get<uint32>();
-        itemTemplate.ScriptId                = sObjectMgr->GetScriptId(fields[132].Get<std::string>());
+        itemTemplate.ScriptId                = sObjectMgr->GetScriptId(DecryptName(fields[132].Get<std::string>()));
         itemTemplate.DisenchantID            = fields[133].Get<uint32>();
         itemTemplate.FoodType                = uint32(fields[134].Get<uint8>());
         itemTemplate.MinMoneyLoot            = fields[135].Get<uint32>();
@@ -3334,7 +3337,7 @@ void ObjectMgr::LoadItemSetNameLocales()
             continue;
 
         ItemSetNameLocale& data = _itemSetNameLocaleStore[ID];
-        AddLocaleString(fields[2].Get<std::string>(), locale, data.Name);
+        AddLocaleString(DecryptName(fields[2].Get<std::string>()), locale, data.Name);
     } while (result->NextRow());
 
     LOG_INFO("server.loading", ">> Loaded {} Item Set Name Locale Strings in {} ms", uint32(_itemSetNameLocaleStore.size()), GetMSTimeDiffToNow(oldMSTime));
@@ -3385,7 +3388,7 @@ void ObjectMgr::LoadItemSetNames()
         }
 
         ItemSetNameEntry& data = _itemSetNameStore[entry];
-        data.name = fields[1].Get<std::string>();
+        data.name = DecryptName(fields[1].Get<std::string>());
 
         uint32 invType = fields[2].Get<uint8>();
         if (invType >= MAX_INVTYPE)
@@ -5235,14 +5238,14 @@ void ObjectMgr::LoadQuestLocales()
             continue;
 
         QuestLocale& data = _questLocaleStore[ID];
-        AddLocaleString(fields[2].Get<std::string>(), locale, data.Title);
-        AddLocaleString(fields[3].Get<std::string>(), locale, data.Details);
-        AddLocaleString(fields[4].Get<std::string>(), locale, data.Objectives);
-        AddLocaleString(fields[5].Get<std::string>(), locale, data.AreaDescription);
-        AddLocaleString(fields[6].Get<std::string>(), locale, data.CompletedText);
+        AddLocaleString(DecryptName(fields[2].Get<std::string>()), locale, data.Title);
+        AddLocaleString(DecryptName(fields[3].Get<std::string>()), locale, data.Details);
+        AddLocaleString(DecryptName(fields[4].Get<std::string>()), locale, data.Objectives);
+        AddLocaleString(DecryptName(fields[5].Get<std::string>()), locale, data.AreaDescription);
+        AddLocaleString(DecryptName(fields[6].Get<std::string>()), locale, data.CompletedText);
 
         for (uint8 i = 0; i < 4; ++i)
-            AddLocaleString(fields[i + 7].Get<std::string>(), locale, data.ObjectiveText[i]);
+            AddLocaleString(DecryptName(fields[i + 7].Get<std::string>()), locale, data.ObjectiveText[i]);
     } while (result->NextRow());
 
     LOG_INFO("server.loading", ">> Loaded {} Quest Locale Strings in {} ms", (uint32)_questLocaleStore.size(), GetMSTimeDiffToNow(oldMSTime));
@@ -5683,7 +5686,7 @@ void ObjectMgr::LoadSpellScriptNames()
         Field* fields = result->Fetch();
 
         int32 spellId          = fields[0].Get<int32>();
-        std::string scriptName = fields[1].Get<std::string>();
+        std::string scriptName = DecryptName(fields[1].Get<std::string>());
 
         bool allRanks = false;
         if (spellId <= 0)
@@ -5812,7 +5815,7 @@ void ObjectMgr::LoadPageTexts()
 
         PageText& pageText = _pageTextStore[fields[0].Get<uint32>()];
 
-        pageText.Text     = fields[1].Get<std::string>();
+        pageText.Text     = DecryptName(fields[1].Get<std::string>());
         pageText.NextPage = fields[2].Get<uint32>();
 
         ++count;
@@ -5864,7 +5867,7 @@ void ObjectMgr::LoadPageTextLocales()
             continue;
 
         PageTextLocale& data = _pageTextLocaleStore[ID];
-        AddLocaleString(fields[2].Get<std::string>(), locale, data.Text);
+        AddLocaleString(DecryptName(fields[2].Get<std::string>()), locale, data.Text);
     } while (result->NextRow());
 
     LOG_INFO("server.loading", ">> Loaded {} Page Text Locale Strings in {} ms", (uint32)_pageTextLocaleStore.size(), GetMSTimeDiffToNow(oldMSTime));
@@ -5901,7 +5904,7 @@ void ObjectMgr::LoadInstanceTemplate()
 
         instanceTemplate.AllowMount = fields[3].Get<bool>();
         instanceTemplate.Parent     = uint32(fields[1].Get<uint16>());
-        instanceTemplate.ScriptId   = sObjectMgr->GetScriptId(fields[2].Get<std::string>());
+        instanceTemplate.ScriptId   = sObjectMgr->GetScriptId(DecryptName(fields[2].Get<std::string>()));
 
         _instanceTemplateStore[mapID] = instanceTemplate;
 
@@ -6058,8 +6061,10 @@ void ObjectMgr::LoadGossipText()
 
         for (uint8 i = 0; i < MAX_GOSSIP_TEXT_OPTIONS; ++i)
         {
-            gText.Options[i].Text_0           = fields[cic++].Get<std::string>();
-            gText.Options[i].Text_1           = fields[cic++].Get<std::string>();
+
+            // TODO: Not sure if this works as intended... TAKE A LOOK LATER.
+            gText.Options[i].Text_0           = DecryptName(fields[cic++].Get<std::string>());
+            gText.Options[i].Text_1           = DecryptName(fields[cic++].Get<std::string>());
             gText.Options[i].BroadcastTextID  = fields[cic++].Get<uint32>();
             gText.Options[i].Language         = fields[cic++].Get<uint8>();
             gText.Options[i].Probability      = fields[cic++].Get<float>();
@@ -6117,8 +6122,8 @@ void ObjectMgr::LoadNpcTextLocales()
         NpcTextLocale& data = _npcTextLocaleStore[ID];
         for (uint8 i = 0; i < MAX_GOSSIP_TEXT_OPTIONS; ++i)
         {
-            AddLocaleString(fields[2 + i * 2].Get<std::string>(), locale, data.Text_0[i]);
-            AddLocaleString(fields[3 + i * 2].Get<std::string>(), locale, data.Text_1[i]);
+            AddLocaleString(DecryptName(fields[2 + i * 2].Get<std::string>()), locale, data.Text_0[i]);
+            AddLocaleString(DecryptName(fields[3 + i * 2].Get<std::string>()), locale, data.Text_1[i]);
         }
     } while (result->NextRow());
 
@@ -6370,7 +6375,7 @@ void ObjectMgr::LoadQuestGreetings()
 
         data.EmoteType = fields[2].Get<uint16>();
         data.EmoteDelay = fields[3].Get<uint32>();
-        AddLocaleString(fields[4].Get<std::string>(), LOCALE_enUS, data.Greeting);
+        AddLocaleString(DecryptName(fields[4].Get<std::string>()), LOCALE_enUS, data.Greeting);
     }
     while (result->NextRow());
 
@@ -6431,7 +6436,7 @@ void ObjectMgr::LoadQuestGreetingsLocales()
         if (locale == LOCALE_enUS)
             continue;
 
-        AddLocaleString(fields[3].Get<std::string>(), locale, data.Greeting);
+        AddLocaleString(DecryptName(fields[3].Get<std::string>()), locale, data.Greeting);
         localeCount++;
     } while (result->NextRow());
 
@@ -6462,7 +6467,7 @@ void ObjectMgr::LoadQuestOfferRewardLocale()
             continue;
 
         QuestOfferRewardLocale& data = _questOfferRewardLocaleStore[id];
-        AddLocaleString(fields[2].Get<std::string>(), locale, data.RewardText);
+        AddLocaleString(DecryptName(fields[2].Get<std::string>()), locale, data.RewardText);
     } while (result->NextRow());
 
     LOG_INFO("server.loading", ">> Loaded {} Quest Offer Reward Locale Strings in {} ms", _questOfferRewardLocaleStore.size(), GetMSTimeDiffToNow(oldMSTime));
@@ -6491,7 +6496,7 @@ void ObjectMgr::LoadQuestRequestItemsLocale()
             continue;
 
         QuestRequestItemsLocale& data = _questRequestItemsLocaleStore[id];
-        AddLocaleString(fields[2].Get<std::string>(), locale, data.CompletionText);
+        AddLocaleString(DecryptName(fields[2].Get<std::string>()), locale, data.CompletionText);
     } while (result->NextRow());
 
     LOG_INFO("server.loading", ">> Loaded {} Quest Request Items Locale Strings in {} ms", _questRequestItemsLocaleStore.size(), GetMSTimeDiffToNow(oldMSTime));
@@ -6561,7 +6566,7 @@ void ObjectMgr::LoadAreaTriggerScripts()
         Field* fields = result->Fetch();
 
         uint32 Trigger_ID      = fields[0].Get<uint32>();
-        std::string scriptName = fields[1].Get<std::string>();
+        std::string scriptName = DecryptName(fields[1].Get<std::string>());
 
         AreaTrigger const* atEntry = GetAreaTrigger(Trigger_ID);
         if (!atEntry)
@@ -6860,7 +6865,7 @@ void ObjectMgr::LoadAccessRequirements()
 
                 const uint8 requirement_type             = progression_requirement_row[0].Get<uint8>();
                 const uint32 requirement_id              = progression_requirement_row[1].Get<uint32>();
-                const std::string requirement_note       = progression_requirement_row[2].Get<std::string>();
+                const std::string requirement_note       = DecryptName(progression_requirement_row[2].Get<std::string>());
                 const uint8 requirement_faction          = progression_requirement_row[3].Get<uint8>();
                 const uint8 requirement_priority         = progression_requirement_row[4].IsNull() ? UINT8_MAX : progression_requirement_row[4].Get<uint8>();
                 const bool requirement_checkLeaderOnly   = progression_requirement_row[5].Get<bool>();
@@ -7133,8 +7138,8 @@ void ObjectMgr::LoadGameObjectLocales()
             continue;
 
         GameObjectLocale& data = _gameObjectLocaleStore[ID];
-        AddLocaleString(fields[2].Get<std::string>(), locale, data.Name);
-        AddLocaleString(fields[3].Get<std::string>(), locale, data.CastBarCaption);
+        AddLocaleString(DecryptName(fields[2].Get<std::string>()), locale, data.Name);
+        AddLocaleString(DecryptName(fields[3].Get<std::string>()), locale, data.CastBarCaption);
     } while (result->NextRow());
 
     LOG_INFO("server.loading", ">> Loaded {} Gameobject Locale Strings in {} ms", (uint32)_gameObjectLocaleStore.size(), GetMSTimeDiffToNow(oldMSTime));
@@ -7231,17 +7236,17 @@ void ObjectMgr::LoadGameObjectTemplate()
         got.entry          = entry;
         got.type           = uint32(fields[1].Get<uint8>());
         got.displayId      = fields[2].Get<uint32>();
-        got.name           = fields[3].Get<std::string>();
-        got.IconName       = fields[4].Get<std::string>();
-        got.castBarCaption = fields[5].Get<std::string>();
-        got.unk1           = fields[6].Get<std::string>();
+        got.name           = DecryptName(fields[3].Get<std::string>());
+        got.IconName       = DecryptName(fields[4].Get<std::string>());
+        got.castBarCaption = DecryptName(fields[5].Get<std::string>());
+        got.unk1           = DecryptName(fields[6].Get<std::string>());
         got.size           = fields[7].Get<float>();
 
         for (uint8 i = 0; i < MAX_GAMEOBJECT_DATA; ++i)
             got.raw.data[i] = fields[8 + i].Get<int32>(); // data1 and data6 can be -1
 
-        got.AIName = fields[32].Get<std::string>();
-        got.ScriptId = GetScriptId(fields[33].Get<std::string>());
+        got.AIName         = DecryptName(fields[32].Get<std::string>());
+        got.ScriptId       = GetScriptId(DecryptName(fields[33].Get<std::string>()));
         got.IsForQuests = false;
 
         // Checks
@@ -7901,7 +7906,7 @@ void ObjectMgr::LoadPointsOfInterest()
         POI.Icon        = fields[3].Get<uint32>();
         POI.Flags       = fields[4].Get<uint32>();
         POI.Importance  = fields[5].Get<uint32>();
-        POI.Name        = fields[6].Get<std::string>();
+        POI.Name        = DecryptName(fields[6].Get<std::string>());
 
         if (!Acore::IsValidMapCoord(POI.PositionX, POI.PositionY))
         {
@@ -9409,7 +9414,7 @@ void ObjectMgr::LoadGossipMenuItems()
         gMenuItem.MenuID                    = fields[0].Get<uint32>();
         gMenuItem.OptionID                  = fields[1].Get<uint16>();
         gMenuItem.OptionIcon                = fields[2].Get<uint32>();
-        gMenuItem.OptionText                = fields[3].Get<std::string>();
+        gMenuItem.OptionText                = DecryptName(fields[3].Get<std::string>());
         gMenuItem.OptionBroadcastTextID     = fields[4].Get<uint32>();
         gMenuItem.OptionType                = fields[5].Get<uint8>();
         gMenuItem.OptionNpcFlag             = fields[6].Get<uint32>();
@@ -9417,7 +9422,7 @@ void ObjectMgr::LoadGossipMenuItems()
         gMenuItem.ActionPoiID               = fields[8].Get<uint32>();
         gMenuItem.BoxCoded                  = fields[9].Get<bool>();
         gMenuItem.BoxMoney                  = fields[10].Get<uint32>();
-        gMenuItem.BoxText                   = fields[11].Get<std::string>();
+        gMenuItem.BoxText                   = DecryptName(fields[11].Get<std::string>());
         gMenuItem.BoxBroadcastTextID        = fields[12].Get<uint32>();
 
         if (gMenuItem.OptionIcon >= GOSSIP_ICON_MAX)
@@ -9623,7 +9628,7 @@ void ObjectMgr::LoadScriptNames()
 
     do
     {
-        _scriptNamesStore.push_back((*result)[0].Get<std::string>());
+        _scriptNamesStore.push_back(DecryptName((*result)[0].Get<std::string>()));
     } while (result->NextRow());
 
     std::sort(_scriptNamesStore.begin(), _scriptNamesStore.end());
@@ -9674,19 +9679,19 @@ void ObjectMgr::LoadBroadcastTexts()
 
         BroadcastText bct;
 
-        bct.Id = fields[0].Get<uint32>();
-        bct.LanguageID = fields[1].Get<uint32>();
-        bct.MaleText[DEFAULT_LOCALE] = fields[2].Get<std::string>();
-        bct.FemaleText[DEFAULT_LOCALE] = fields[3].Get<std::string>();
-        bct.EmoteId1 = fields[4].Get<uint32>();
-        bct.EmoteId2 = fields[5].Get<uint32>();
-        bct.EmoteId3 = fields[6].Get<uint32>();
-        bct.EmoteDelay1 = fields[7].Get<uint32>();
-        bct.EmoteDelay2 = fields[8].Get<uint32>();
-        bct.EmoteDelay3 = fields[9].Get<uint32>();
-        bct.SoundEntriesId = fields[10].Get<uint32>();
-        bct.EmotesID = fields[11].Get<uint32>();
-        bct.Flags = fields[12].Get<uint32>();
+        bct.Id                                              = fields[0].Get<uint32>();
+        bct.LanguageID                                      = fields[1].Get<uint32>();
+        bct.MaleText[DEFAULT_LOCALE]                        = DecryptName(fields[2].Get<std::string>());
+        bct.FemaleText[DEFAULT_LOCALE]                      = DecryptName(fields[3].Get<std::string>());
+        bct.EmoteId1                                        = fields[4].Get<uint32>();
+        bct.EmoteId2                                        = fields[5].Get<uint32>();
+        bct.EmoteId3                                        = fields[6].Get<uint32>();
+        bct.EmoteDelay1                                     = fields[7].Get<uint32>();
+        bct.EmoteDelay2                                     = fields[8].Get<uint32>();
+        bct.EmoteDelay3                                     = fields[9].Get<uint32>();
+        bct.SoundEntriesId                                  = fields[10].Get<uint32>();
+        bct.EmotesID                                        = fields[11].Get<uint32>();
+        bct.Flags                                           = fields[12].Get<uint32>();
 
         if (bct.SoundEntriesId)
         {
@@ -9768,8 +9773,8 @@ void ObjectMgr::LoadBroadcastTextLocales()
         if (locale == LOCALE_enUS)
             continue;
 
-        AddLocaleString(fields[2].Get<std::string>(), locale, bct->second.MaleText);
-        AddLocaleString(fields[3].Get<std::string>(), locale, bct->second.FemaleText);
+        AddLocaleString(DecryptName(fields[2].Get<std::string>()), locale, bct->second.MaleText);
+        AddLocaleString(DecryptName(fields[3].Get<std::string>()), locale, bct->second.FemaleText);
         locales_count++;
     } while (result->NextRow());
 

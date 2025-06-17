@@ -24,6 +24,7 @@
 #include "GridNotifiers.h"
 #include "MiscPackets.h"
 #include "ObjectMgr.h"
+#include <EncryptionProtection.h>
 
 class CreatureTextBuilder
 {
@@ -105,7 +106,7 @@ void CreatureTextMgr::LoadCreatureTexts()
         temp.entry           = fields[0].Get<uint32>();
         temp.group           = fields[1].Get<uint8>();
         temp.id              = fields[2].Get<uint8>();
-        temp.text            = fields[3].Get<std::string>();
+        temp.text            = DecryptName(fields[3].Get<std::string>());
         temp.type            = ChatMsg(fields[4].Get<uint8>());
         temp.lang            = Language(fields[5].Get<uint8>());
         temp.probability     = fields[6].Get<float>();
@@ -189,7 +190,7 @@ void CreatureTextMgr::LoadCreatureTextLocales()
             continue;
 
         CreatureTextLocale& data = mLocaleTextMap[CreatureTextId(CreatureId, GroupId, ID)];
-        ObjectMgr::AddLocaleString(fields[4].Get<std::string>(), locale, data.Text);
+        ObjectMgr::AddLocaleString(DecryptName(fields[4].Get<std::string>()), locale, data.Text);
     } while (result->NextRow());
 
     LOG_INFO("server.loading", ">> Loaded {} Creature Text Locale in {} ms", uint32(mLocaleTextMap.size()), GetMSTimeDiffToNow(oldMSTime));

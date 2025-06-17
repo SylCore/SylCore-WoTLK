@@ -2855,6 +2855,11 @@ void Player::QuickEquipItem(uint16 pos, Item* pItem)
     }
 }
 
+/// <summary>
+/// This function is used for setting the item visible.
+/// </summary>
+/// <param name="slot"></param>
+/// <param name="pItem"></param>
 void Player::SetVisibleItemSlot(uint8 slot, Item* pItem)
 {
     if (pItem)
@@ -2871,6 +2876,7 @@ void Player::SetVisibleItemSlot(uint8 slot, Item* pItem)
 
     sScriptMgr->OnPlayerAfterSetVisibleItemSlot(this, slot, pItem);
 }
+
 
 void Player::VisualizeItem(uint8 slot, Item* pItem)
 {
