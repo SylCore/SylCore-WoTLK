@@ -37,7 +37,6 @@ void Acore::Banner::Show(std::string_view applicationName, void(*log)(std::strin
     log("                 ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝\n");
     log("--------------------------------------------------------------\n");
     log("   SylCore 3.3.5 - Custom World of Warcraft Server Core\n");
-    log("   Based on AzerothCore (which was based on TrinityCore)\n");
     log("--------------------------------------------------------------\n");
 
     if (logExtraInfo)

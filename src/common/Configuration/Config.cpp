@@ -3,7 +3,7 @@
  *
  *
  * Copyright (C) 2016-2025 AzerothCore <www.azerothcore.org>
- * Copyright (C) 2025 SylCore
+ * Copyright (C) 2025-2026 SylCore
  *
  * 
  * This program is free software; you can redistribute it and/or modify it
@@ -33,6 +33,21 @@
 
 namespace
 {
+    /// <summary>
+    /// This will need to be set to "false" for stopping the logging in the console.
+    /// So, it is always enabled (The protection), but, if you want it to stop logging to the console, you can change that here :)
+    /// </summary>
+    bool _logProtectedConfigs = true;
+
+    // To add new protected configs, I have left some examples (Don´t worry, they aren´t active, but its giving you the way to do it)
+    // Adding a new one to the list is simple, you do:
+    // {"NAME_OF_CONFIG", "VALUE_YOU_WANT_IT_TO_BE"},
+    // That is all.
+    std::unordered_map<std::string /*name*/, std::string /*value*/> _protectedConfigs = {
+        //{"Rate.Talent", "1"},
+        //{"Rate.MoveSpeed.Player", "1"}
+    };
+  
     std::string _filename;
     std::vector<std::string> _additonalFiles;
     std::vector<std::string> _args;
@@ -48,6 +63,20 @@ namespace
         { "CharacterDatabaseInfo" },
     };
 
+    Optional<std::string> GetProtectedConfigValue(std::string const& m_optionName)
+    {
+        auto it = _protectedConfigs.find(m_optionName);
+        if (it != _protectedConfigs.end())
+        {
+            if (_logProtectedConfigs) {
+                LOG_INFO("server.loading", "Config: Using protected value '{}' for '{}'", it->second, m_optionName);
+            }
+
+            return it->second;
+        }
+        return std::nullopt;
+    }
+
     // Check system configs like *server.conf*
     bool IsAppConfig(std::string_view fileName)
     {
@@ -55,7 +84,7 @@ namespace
         std::size_t foundWorld = fileName.find("worldserver.conf");
         std::size_t foundImport = fileName.find("dbimport.conf");
         std::size_t foundGame = fileName.find("gameplay.conf");
-
+        // To remove config, change it here.
 
         return foundAuth != std::string_view::npos || foundWorld != std::string_view::npos || foundImport != std::string_view::npos || foundGame != std::string_view::npos;
     }
@@ -87,6 +116,7 @@ namespace
     void AddKey(std::string const& optionName, std::string const& optionKey, std::string_view fileName, bool isOptional, [[maybe_unused]] bool isReload)
     {
         auto const& itr = _configOptions.find(optionName);
+        
 
         // Check old option
         if (isOptional && itr == _configOptions.end())
@@ -298,6 +328,28 @@ namespace
             return std::nullopt;
 
         return std::string(val);
+    }
+}
+
+/// <summary>
+/// Custom SylCore feature.
+/// Made to help all the amazing repack developers using SylCore for their projects.
+/// </summary>
+void ConfigMgr::ApplyProtectedConfigs()
+{
+    for (const auto& [optionName, optionValue] : _protectedConfigs)
+    {
+        // Always set protected values, overriding any existing values
+        _configOptions[optionName] = optionValue;
+
+        // If "_logProtectedConfigs" is true, it will print/log to the console.
+        // Protection is always enabled, but this simple if statment is just for people to choose,
+        // if they want it to tell the users in the console that it applied a protected config value.
+        // 
+        if (_logProtectedConfigs) {
+            LOG_INFO("server.loading", "Config: Applied protected config '{}' = '{}'",
+                optionName, optionValue);
+        }
     }
 }
 
@@ -583,6 +635,9 @@ bool ConfigMgr::LoadAppConfigs(bool isReload /*= false*/)
         LOG_FATAL("server.loading", "> Failed to find 'gameplay.conf', please make sure you removed the '.dist' from the file!");
         ABORT();
     }
+
+    // Apply protected configs after all files are loaded
+    ApplyProtectedConfigs();
     
 
     //LoadAdditionalFile(GetConfigPath() + "gameplay.conf", false, isReload);
