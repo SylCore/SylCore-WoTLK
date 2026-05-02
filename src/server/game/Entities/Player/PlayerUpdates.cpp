@@ -46,6 +46,7 @@
 //  there is probably some underlying problem with imports which should properly addressed
 //  see: https://github.com/azerothcore/azerothcore-wotlk/issues/9766
 #include "GridNotifiersImpl.h"
+#include <DynamicAreaTriggerMgr.cpp>
 
 // Zone Interval should be 1 second
 constexpr auto ZONE_UPDATE_INTERVAL = 1000;
@@ -1175,6 +1176,9 @@ bool Player::UpdatePosition(float x, float y, float z, float orientation,
         GetSession()->SendCancelTrade(TRADE_STATUS_TRADE_CANCELED);
 
     CheckAreaExploreAndOutdoor();
+
+    // SylCore Dynamic Area Trigger System
+    sDynamicAreaTriggerMgr->UpdatePlayerPosition(this);
 
     return true;
 }

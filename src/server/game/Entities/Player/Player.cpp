@@ -98,6 +98,7 @@
 //  there is probably some underlying problem with imports which should properly addressed
 //  see: https://github.com/azerothcore/azerothcore-wotlk/issues/9766
 #include "GridNotifiersImpl.h"
+#include <DynamicAreaTriggerMgr.h>
 
 enum CharacterFlags
 {
@@ -1734,6 +1735,7 @@ void Player::RemoveFromWorld()
         sOutdoorPvPMgr->HandlePlayerLeaveZone(this, m_zoneUpdateId);
         sBattlefieldMgr->HandlePlayerLeaveZone(this, m_zoneUpdateId);
         sWorldState->HandlePlayerLeaveZone(this, static_cast<WorldStateZoneId>(m_zoneUpdateId));
+        sDynamicAreaTriggerMgr->RemovePlayerFromAll(this); // Custom SylCore DynamicAreaTrigger System
     }
 
     // Remove items from world before self - player must be found in Item::RemoveFromObjectUpdate
