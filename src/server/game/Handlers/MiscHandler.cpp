@@ -533,6 +533,8 @@ void WorldSession::HandleZoneUpdateOpcode(WorldPacket& recv_data)
     //GetPlayer()->SendInitWorldStates(true, newZone);
 }
 
+/// Old version before the Player_Event_OnTargetChanged event was added, keep it for reference down the line
+/*
 void WorldSession::HandleSetSelectionOpcode(WorldPacket& recv_data)
 {
     ObjectGuid guid;
@@ -540,7 +542,50 @@ void WorldSession::HandleSetSelectionOpcode(WorldPacket& recv_data)
 
     _player->SetSelection(guid);
 
+    // Add event for when player change target.
+    // Arguments it should send back would be "playerGUID, OldTarget, NewTarget"
+    // Event should be called "OnPlayerTargetChanged", and you should be able to register it by using "RegisterPlayerEvent(PLAYER_EVENT_ON_TARGET_CHANGED, function);"
+    // And by using "RegisterPlayerEvent(PLAYER_EVENT_ON_TARGET_CHANGED, function, guid);" you should be able to register it for specific player guid.
+
     // Change target of current autoshoot spell
+    if (guid)
+    {
+        if (Spell* autoReapeatSpell = _player->GetCurrentSpell(CURRENT_AUTOREPEAT_SPELL))
+        {
+            if (autoReapeatSpell->m_targets.GetUnitTargetGUID() != guid)
+            {
+                if (Unit* unit = ObjectAccessor::GetUnit(*_player, guid))
+                {
+                    if (unit->IsAlive() && !_player->IsFriendlyTo(unit) && unit->isTargetableForAttack(true, _player))
+                    {
+                        autoReapeatSpell->m_targets.SetUnitTarget(unit);
+                    }
+                }
+            }
+        }
+    }
+}*/
+
+void WorldSession::HandleSetSelectionOpcode(WorldPacket& recv_data)
+{
+    ObjectGuid guid;
+    recv_data >> guid;
+
+    // Capture old target Unit* BEFORE the selection changes
+    Unit* pOldTarget = _player->GetSelectedUnit();
+
+    _player->SetSelection(guid);
+
+    // Resolve new target (nullptr if deselecting)
+    Unit* pNewTarget = guid
+        ? ObjectAccessor::GetUnit(*_player, guid)
+        : nullptr;
+
+    // Only fire if the target actually changed
+    if (pOldTarget != pNewTarget)
+        sScriptMgr->OnPlayerTargetChanged(_player, pOldTarget, pNewTarget);
+
+    // Change target of current autoshoot spell (existing logic unchanged)
     if (guid)
     {
         if (Spell* autoReapeatSpell = _player->GetCurrentSpell(CURRENT_AUTOREPEAT_SPELL))

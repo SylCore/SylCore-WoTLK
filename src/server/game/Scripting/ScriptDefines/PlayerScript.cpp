@@ -910,6 +910,11 @@ void ScriptMgr::OnPlayerUpdateSkill(Player* player, uint32 skillId, uint32 value
     CALL_ENABLED_HOOKS(PlayerScript, PLAYERHOOK_ON_UPDATE_SKILL, script->OnPlayerUpdateSkill(player, skillId, value, max, step, newValue));
 }
 
+void ScriptMgr::OnPlayerTargetChanged(Player* player, Unit* oldTarget, Unit* newTarget)
+{
+    CALL_ENABLED_HOOKS(PlayerScript, PLAYERHOOK_ON_TARGET_CHANGED, script->OnPlayerTargetChanged(player, oldTarget, newTarget));
+}
+
 bool ScriptMgr::OnPlayerCanResurrect(Player* player)
 {
     CALL_ENABLED_BOOLEAN_HOOKS(PlayerScript, PLAYERHOOK_CAN_RESURRECT, !script->OnPlayerCanResurrect(player));
