@@ -46,7 +46,7 @@
 //  there is probably some underlying problem with imports which should properly addressed
 //  see: https://github.com/azerothcore/azerothcore-wotlk/issues/9766
 #include "GridNotifiersImpl.h"
-#include <DynamicAreaTriggerMgr.cpp>
+#include <DynamicAreaTriggerMgr.h>
 
 // Zone Interval should be 1 second
 constexpr auto ZONE_UPDATE_INTERVAL = 1000;
