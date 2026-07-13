@@ -87,6 +87,16 @@ typedef void(*bgZoneRef)(Battleground*, WorldPackets::WorldState::InitWorldState
 #define SKILL_PERM_BONUS(x)    int16(PAIR32_HIPART(x))
 #define MAKE_SKILL_BONUS(t, p) MAKE_PAIR32(t, p)
 
+// SylCore | Made by Morten (Sylian)
+struct PlayerTravelStats
+{
+    uint64_t SessionTotal = 0;
+    uint64_t Walked = 0;
+    uint64_t Mounted = 0;
+    uint64_t Swimming = 0;
+    uint64_t Flying = 0;
+};
+
 // Note: SPELLMOD_* values is aura types in fact
 enum SpellModType
 {
@@ -900,6 +910,7 @@ enum PlayerLoginQueryIndex
     PLAYER_LOGIN_QUERY_LOAD_CHARACTER_SETTINGS           = 36,
     PLAYER_LOGIN_QUERY_LOAD_PET_SLOTS                    = 37,
     PLAYER_LOGIN_QUERY_LOAD_OFFLINE_ACHIEVEMENTS_UPDATES = 38,
+    PLAYER_LOGIN_QUERY_LOAD_MOVEMENT_TRAVEL_STATS        = 39,
     MAX_PLAYER_LOGIN_QUERY
 };
 
@@ -2380,6 +2391,9 @@ public:
     float m_homebindY;
     float m_homebindZ;
 
+    //double m_movementWalkedDistance;
+    PlayerTravelStats m_movementTravelStats;
+
     [[nodiscard]] WorldLocation GetStartPosition() const;
 
     [[nodiscard]] WorldLocation const& GetEntryPoint() const { return m_entryPointData.joinPos; }
@@ -2742,6 +2756,7 @@ protected:
     void _LoadBrewOfTheMonth(PreparedQueryResult result);
     void _LoadCharacterSettings(PreparedQueryResult result);
     void _LoadPetStable(uint8 petStableSlots, PreparedQueryResult result);
+    void _LoadMovementTravelStats(PreparedQueryResult result);
 
     /*********************************************************/
     /***                   SAVE SYSTEM                     ***/
@@ -2765,6 +2780,7 @@ protected:
     void _SaveCharacter(bool create, CharacterDatabaseTransaction trans);
     void _SaveInstanceTimeRestrictions(CharacterDatabaseTransaction trans);
     void _SavePlayerSettings(CharacterDatabaseTransaction trans);
+    void _SaveMovementTravelStats(bool create, CharacterDatabaseTransaction trans);
 
     /*********************************************************/
     /***              ENVIRONMENTAL SYSTEM                 ***/

@@ -355,6 +355,9 @@ Player::Player(WorldSession* session): Unit(true), m_mover(this)
     m_homebindY = 0;
     m_homebindZ = 0;
 
+    // SylCore | Made by Morten (Sylian)
+    PlayerTravelStats m_movementTravelStats;
+
     m_contestedPvPTimer = 0;
 
     m_declinedname = nullptr;
@@ -4304,6 +4307,10 @@ void Player::DeleteFromDB(ObjectGuid::LowType lowGuid, uint32 accountId, bool up
                 trans->Append(stmt);
 
                 stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_SETTINGS);
+                stmt->SetData(0, lowGuid);
+                trans->Append(stmt);
+
+                stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_MOVEMENT_STAT);
                 stmt->SetData(0, lowGuid);
                 trans->Append(stmt);
 
@@ -14769,6 +14776,39 @@ void Player::SetMap(Map* map)
 {
     Unit::SetMap(map);
     m_mapRef.link(map, this);
+}
+
+void Player::_SaveMovementTravelStats(bool create, CharacterDatabaseTransaction trans)
+{
+    CharacterDatabasePreparedStatement* stmtDel = CharacterDatabase.GetPreparedStatement(CHAR_DEL_MOVEMENT_STAT);
+    stmtDel->SetData(0, GetGUID().GetCounter());
+    trans->Append(stmtDel);
+
+    CharacterDatabasePreparedStatement* stmt = nullptr;
+    stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_MOVEMENT_STAT);
+    stmt->SetData(0, GetGUID().GetCounter());
+    stmt->SetData(1, m_movementTravelStats.Walked);
+    stmt->SetData(2, m_movementTravelStats.Mounted);
+    stmt->SetData(3, m_movementTravelStats.Swimming);
+    stmt->SetData(4, m_movementTravelStats.Flying);
+
+    trans->Append(stmt);
+}
+
+void Player::_LoadMovementTravelStats(PreparedQueryResult result)
+{
+    // SELECT walked, mounted, swimming, flying from character_travel_stats WHERE guid = '%u'
+    if (!result)
+        return;
+
+    Field* fields = result->Fetch();
+
+    m_movementTravelStats.Walked = fields[0].Get<uint64>();
+    m_movementTravelStats.Mounted = fields[1].Get<uint64>();
+    m_movementTravelStats.Swimming = fields[2].Get<uint64>();
+    m_movementTravelStats.Flying = fields[3].Get<uint64>();
+
+    LOG_ERROR("entities.player", "Player {} movement travel stats loaded: walked {}, mounted {}, swimming {}, flying {}", GetName(), m_movementTravelStats.Walked, m_movementTravelStats.Mounted, m_movementTravelStats.Swimming, m_movementTravelStats.Flying);
 }
 
 void Player::_SaveCharacter(bool create, CharacterDatabaseTransaction trans)

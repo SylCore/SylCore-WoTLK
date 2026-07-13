@@ -3106,6 +3106,13 @@ Glyph.MinorUnlockLevel2 = 50
 Glyph.MinorUnlockLevel3 = 70
 
 #
+#    SylCoreTravelStatsEnabled
+#        Description: If enabled, this will count yards from Walking/Running, Flying, Swimming, Mounted. These will be saved in the database, and can be used via Eluna + Modules.
+#        Default:     0
+
+SylCoreTravelStatsEnabled = 0
+
+#
 ###################################################################################################
 #                                                                                                 #
 # GAME SETTINGS END                                                                               #

@@ -1282,6 +1282,9 @@ void World::LoadConfigSettings(bool reload)
     // Loading the config setting for the disclaimer text, by default, its true.
     _bool_configs[CONFIG_SYLCORE_MOTD_DISCLAIMER_ENABLED] = sConfigMgr->GetOption<bool>("SylCoreDisclaimerEnabled", true);
 
+    // Loading the config setting for the travel stats, by default, its false.
+    _bool_configs[CONFIG_SYLCORE_TRAVEL_STATS_ENABLED] = sConfigMgr->GetOption<bool>("SylCoreTravelStatsEnabled", false);
+
     // call ScriptMgr if we're reloading the configuration
     sScriptMgr->OnAfterConfigLoad(reload);
 }
@@ -1305,6 +1308,10 @@ void World::SetInitialWorldSettings()
 
     ///- Initialize config settings
     LoadConfigSettings();
+
+    /// SylCore | Morten (Sylian)
+    /// - Store cached config about Travel Stats config.
+    m_travelStatsEnabled = getBoolConfig(CONFIG_SYLCORE_TRAVEL_STATS_ENABLED);
 
     ///- Initialize Allowed Security Level
     LoadDBAllowedSecurityLevel();

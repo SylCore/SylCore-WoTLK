@@ -864,6 +864,50 @@ void Map::PlayerRelocation(Player* player, float x, float y, float z, float o)
         AddToGrid(player, new_cell);
     }
 
+    // ============================================================
+    // SylCore Travel Stats  |  Morten (Sylian)
+    // ============================================================
+    if (sWorld->IsTravelStatsEnabled()) {
+
+        float dx = x - player->GetPositionX();
+        float dy = y - player->GetPositionY();
+
+        float distSq = dx * dx + dy * dy;
+
+        if (distSq > 0.0001f && distSq < 10000.0f)
+        {
+            double distance = std::sqrt(distSq);
+
+            if (distance >= 1.0f && distance <= 100.0f) {
+
+                uint64 yards = static_cast<uint64>(std::round(distance));
+
+                if (player->IsFlying())
+                {
+                    player->m_movementTravelStats.Flying += yards;
+                    player->m_movementTravelStats.SessionTotal += yards;
+                }
+                else if (player->IsMounted())
+                {
+                    player->m_movementTravelStats.Mounted += yards;
+                    player->m_movementTravelStats.SessionTotal += yards;
+                }
+                else if (player->isSwimming())
+                {
+                    player->m_movementTravelStats.Swimming += yards;
+                    player->m_movementTravelStats.SessionTotal += yards;
+                }
+                else
+                {
+                    // Walking + Running
+                    player->m_movementTravelStats.Walked += yards;
+                    player->m_movementTravelStats.SessionTotal += yards;
+                }
+            }
+        }
+    }
+    // ============================================================
+
     player->Relocate(x, y, z, o);
     if (player->IsVehicle())
         player->GetVehicleKit()->RelocatePassengers();

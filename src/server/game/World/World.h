@@ -293,6 +293,10 @@ public:
 
     void RemoveOldCorpses() override;
 
+    // SylCore | Morten (Sylian)
+    // Added to cache the value, no need to check it a million times.
+    bool IsTravelStatsEnabled() const override { return m_travelStatsEnabled; }
+
 protected:
     void _UpdateGameTime();
     // callback for UpdateRealmCharacters
@@ -369,6 +373,8 @@ private:
      * @param session The World Session that we are finalizing.
      */
     inline void FinalizePlayerWorldSession(WorldSession* session);
+
+    bool m_travelStatsEnabled = false;
 };
 
 std::unique_ptr<IWorld>& getWorldInstance();

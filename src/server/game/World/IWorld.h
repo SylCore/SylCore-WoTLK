@@ -187,6 +187,7 @@ enum WorldBoolConfigs
     CONFIG_SPELL_QUEUE_ENABLED,
     CONFIG_GLYPH_DYNAMIC_UNLOCK_ENABLED,
     CONFIG_SYLCORE_MOTD_DISCLAIMER_ENABLED,
+    CONFIG_SYLCORE_TRAVEL_STATS_ENABLED,
     BOOL_CONFIG_VALUE_COUNT
 };
 
@@ -591,6 +592,7 @@ public:
     [[nodiscard]] virtual std::string const& GetRealmName() const = 0;
     virtual void SetRealmName(std::string name) = 0;
     virtual void RemoveOldCorpses() = 0;
+    virtual bool IsTravelStatsEnabled() const = 0;      // SylCore  |  Morten (Sylian)
 };
 
 #endif //AZEROTHCORE_IWORLD_H
